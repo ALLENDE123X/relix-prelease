@@ -2,7 +2,9 @@
 
 **An intelligent changelog generator that transforms Git commit history into professional, readable changelogs using AI.**
 
-[Live Demo](https://relix-prelease.vercel.app) | [Repository](https://github.com/ALLENDE123X/relix-prelease)
+**Quick Access**: When viewing any GitHub repository, simply add `whatchanged` before `github.com` in the URL to instantly generate a changelog for that repo.
+
+[Live Demo](https://whatchangedgithub.com) | [Repository](https://github.com/ALLENDE123X/relix)
 
 ## Table of Contents
 
@@ -51,14 +53,17 @@ Relix automates this entire workflow by:
 
 ## Live Demo
 
-**Try it now:** [https://relix-prelease.vercel.app](https://relix-prelease.vercel.app)
+**Try it now:** [https://whatchangedgithub.com](https://whatchangedgithub.com)
 
 ### Quick Start Demo:
-1. Visit the [console page](https://relix-prelease.vercel.app/console)
+1. Visit the [console page](https://whatchangedgithub.com/console)
 2. Enter a repository URL (e.g., `https://github.com/facebook/react`)
 3. Select a date range or tag range
 4. Click "Generate Draft" to see AI-generated changelog
 5. Edit and publish your changelog
+
+### Pro Tip:
+When browsing any GitHub repository, simply change `github.com` to `whatchangedgithub.com` in your browser's address bar to instantly access the changelog generator for that specific repo.
 
 ## User-Centered Product Design
 
@@ -352,8 +357,8 @@ relix/
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/ALLENDE123X/relix-prelease.git
-cd relix-prelease
+git clone https://github.com/ALLENDE123X/relix.git
+cd relix
 ```
 
 ### 2. Install Dependencies
