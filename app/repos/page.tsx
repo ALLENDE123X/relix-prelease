@@ -255,60 +255,125 @@ export default function ReposPage() {
       disableTransitionOnChange
     >
       <div className="min-h-screen bg-background">
-        <div className="container mx-auto px-4 py-8">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-foreground mb-2">
-              Repository Changelogs
-            </h1>
-            <p className="text-muted-foreground">
-              Browse all repositories with published changelogs. Click on any repository to view its complete changelog history.
-            </p>
+        {/* Navigation */}
+        <nav className="sticky top-0 z-50 border-b bg-background shadow-sm">
+          <div className="container mx-auto px-6 flex h-14 items-center">
+            <div className="mr-4 flex">
+              <Link href="/" className="flex items-center space-x-2">
+                <span className="font-mono font-bold text-xl bg-gradient-to-r from-emerald-600 via-green-700 to-[#107C41] bg-clip-text text-transparent hover:from-emerald-500 hover:via-green-600 hover:to-green-600 transition-all duration-300">
+                  Relix
+                </span>
+              </Link>
+            </div>
+            <div className="flex flex-1 items-center justify-end">
+              <nav className="flex items-center space-x-6">
+                <Link
+                  href="/repos"
+                  className="text-sm font-mono font-medium bg-gradient-to-r from-emerald-600 to-[#107C41] bg-clip-text text-transparent"
+                >
+                  Repos
+                </Link>
+                <Link
+                  href="/console"
+                  className="text-sm font-mono font-medium text-muted-foreground hover:bg-gradient-to-r hover:from-emerald-600 hover:to-[#107C41] hover:bg-clip-text hover:text-transparent transition-all duration-300"
+                >
+                  Console
+                </Link>
+              </nav>
+              <div className="ml-8 pl-4 border-l border-slate-300 dark:border-slate-600">
+                <ThemeToggle />
+              </div>
+            </div>
           </div>
-
-          {loading && <ReposSkeleton />}
-
-          {error && (
-            <div className="text-center py-12">
-              <div className="text-red-500 mb-4">
-                <FileText className="h-12 w-12 mx-auto mb-2" />
-                <p className="text-lg font-semibold">Error Loading Repositories</p>
+        </nav>
+        
+        <div className="container mx-auto px-6 py-8">
+          {(!loading && !error && repos.length === 0) ? (
+            <>
+              <div className="mb-8">
+                <h1 className="text-3xl font-mono font-bold mb-2">
+                  <span className="bg-gradient-to-r from-slate-700 via-slate-800 to-slate-900 dark:from-slate-200 dark:via-slate-100 dark:to-slate-300 bg-clip-text text-transparent">
+                    Repository
+                  </span>
+                  <span className="ml-2 bg-gradient-to-r from-emerald-600 via-[#107C41] to-green-800 bg-clip-text text-transparent">
+                    Changelogs
+                  </span>
+                </h1>
+                <p className="font-mono text-muted-foreground">
+                  Browse all repositories with published changelogs. Click on any repository to view its complete changelog history.
+                </p>
               </div>
-              <p className="text-muted-foreground mb-4">{error}</p>
-              <Button 
-                onClick={() => window.location.reload()}
-                className="bg-primary text-primary-foreground hover:bg-primary/90"
-              >
-                Try Again
-              </Button>
-            </div>
-          )}
-
-          {!loading && !error && repos.length === 0 && (
-            <div className="text-center py-12">
-              <div className="text-muted-foreground mb-4">
-                <FileText className="h-12 w-12 mx-auto mb-2" />
-                <p className="text-lg font-semibold">No Repositories Found</p>
+              <div className="bg-white/60 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-xl p-8 flex flex-col items-center">
+                <div className="text-muted-foreground mb-4">
+                  <FileText className="h-12 w-12 mx-auto mb-2" />
+                  <p className="text-lg font-mono font-semibold text-center">No Repositories Found</p>
+                </div>
+                <p className="font-mono text-muted-foreground mb-4 text-center">
+                  No changelogs have been published yet. Start by creating your first changelog.
+                </p>
+                <Button 
+                  onClick={() => window.location.href = '/console'}
+                  className="bg-primary text-primary-foreground hover:bg-primary/90"
+                >
+                  Create Changelog
+                </Button>
               </div>
-              <p className="text-muted-foreground mb-4">
-                No changelogs have been published yet. Start by creating your first changelog.
-              </p>
-              <Button 
-                onClick={() => window.location.href = '/console'}
-                className="bg-primary text-primary-foreground hover:bg-primary/90"
-              >
-                Create Changelog
-              </Button>
-            </div>
-          )}
-
-          {!loading && !error && repos.length > 0 && (
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {repos.map((repo) => (
-                <RepoCard key={repo.repo} repo={repo} />
-              ))}
-            </div>
+            </>
+          ) : (
+            <>
+              <div className="mb-8">
+                <h1 className="text-3xl font-mono font-bold mb-2">
+                  <span className="bg-gradient-to-r from-slate-700 via-slate-800 to-slate-900 dark:from-slate-200 dark:via-slate-100 dark:to-slate-300 bg-clip-text text-transparent">
+                    Repository
+                  </span>
+                  <span className="ml-2 bg-gradient-to-r from-emerald-600 via-[#107C41] to-green-800 bg-clip-text text-transparent">
+                    Changelogs
+                  </span>
+                </h1>
+                <p className="font-mono text-muted-foreground">
+                  Browse all repositories with published changelogs. Click on any repository to view its complete changelog history.
+                </p>
+              </div>
+              {loading && <ReposSkeleton />}
+              {error && (
+                <div className="text-center py-12">
+                  <div className="text-red-500 mb-4">
+                    <FileText className="h-12 w-12 mx-auto mb-2" />
+                    <p className="text-lg font-mono font-semibold">Error Loading Repositories</p>
+                  </div>
+                  <p className="font-mono text-muted-foreground mb-4">{error}</p>
+                  <Button 
+                    onClick={() => window.location.reload()}
+                    className="bg-primary text-primary-foreground hover:bg-primary/90"
+                  >
+                    Try Again
+                  </Button>
+                </div>
+              )}
+              {!loading && !error && repos.length > 0 && (
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                  {repos.map((repo) => (
+                    <RepoCard key={repo.repo} repo={repo} />
+                  ))}
+                </div>
+              )}
+            </>
           )}
         </div>
+        
+        {/* Footer */}
+        <footer className="border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 mt-auto">
+          <div className="container mx-auto px-6 flex py-4 items-center justify-center">
+            <div className="text-center">
+              <div className="text-sm font-mono text-muted-foreground">
+                © 2025 Relix. AI-powered changelog generator.
+              </div>
+              <div className="text-sm font-mono text-muted-foreground mt-1">
+                Made with ❤️ for developers
+              </div>
+            </div>
+          </div>
+        </footer>
       </div>
     </ThemeProvider>
   )

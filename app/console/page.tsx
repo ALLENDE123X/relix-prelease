@@ -399,41 +399,51 @@ export default function ConsolePage() {
       enableSystem
       disableTransitionOnChange
     >
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
         {/* Navigation */}
-        <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <div className="container flex h-14 items-center">
+        <nav className="sticky top-0 z-50 border-b bg-background shadow-sm">
+          <div className="container mx-auto px-6 flex h-14 items-center">
             <div className="mr-4 flex">
-              <Link href="/console" className="mr-6 flex items-center space-x-2">
-                <span className="hidden font-bold sm:inline-block">
-                  Changelog Console
+              <Link href="/" className="flex items-center space-x-2">
+                <span className="font-mono font-bold text-xl bg-gradient-to-r from-emerald-600 via-green-700 to-[#107C41] bg-clip-text text-transparent hover:from-emerald-500 hover:via-green-600 hover:to-green-600 transition-all duration-300">
+                  Relix
                 </span>
               </Link>
             </div>
-            <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
-              <nav className="flex items-center space-x-2">
+            <div className="flex flex-1 items-center justify-end">
+              <nav className="flex items-center space-x-4 md:space-x-6">
                 <Link
                   href="/repos"
-                  className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                  className="text-sm font-mono font-medium text-muted-foreground hover:bg-gradient-to-r hover:from-emerald-600 hover:to-[#107C41] hover:bg-clip-text hover:text-transparent transition-all duration-300"
                 >
-                  Browse Repos
+                  Repos
+                </Link>
+                <Link
+                  href="/console"
+                  className="text-sm font-mono font-medium bg-gradient-to-r from-emerald-600 to-[#107C41] bg-clip-text text-transparent"
+                >
+                  Console
                 </Link>
               </nav>
-              <ThemeToggle />
+              <div className="ml-8 pl-4 border-l border-slate-300 dark:border-slate-600">
+                <ThemeToggle />
+              </div>
             </div>
           </div>
         </nav>
 
-        {/* Header */}
-        <header className={`${!draft ? 'sticky top-0 z-50' : ''} border-b bg-background/80 backdrop-blur-sm`}>
-          <div className="container mx-auto px-6 py-4">
-            <div className="flex items-center justify-between">
-              <h1 className="text-xl font-semibold">Changelog Console</h1>
-              <ThemeToggle />
-            </div>
-
-            {/* Form controls */}
-            <div className="mt-4 space-y-4">
+        {/* Form controls */}
+        <div className="bg-background/80 backdrop-blur-sm border-b shadow-sm">
+          <div className="container mx-auto px-6 py-6">
+            <h1 className="text-2xl font-mono font-semibold mb-6">
+              <span className="bg-gradient-to-r from-slate-700 via-slate-800 to-slate-900 dark:from-slate-200 dark:via-slate-100 dark:to-slate-300 bg-clip-text text-transparent">
+                Changelog
+              </span>
+              <span className="ml-2 bg-gradient-to-r from-emerald-600 via-[#107C41] to-green-800 bg-clip-text text-transparent">
+                Console
+              </span>
+            </h1>
+            <div className="space-y-4 md:space-y-6 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-200 dark:border-slate-700 p-4 md:p-6 shadow-xl">
               {/* Repository URL and Branch */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="md:col-span-2">
@@ -445,7 +455,7 @@ export default function ConsolePage() {
                       placeholder="https://github.com/vercel/next.js"
                       value={repoUrl}
                       onChange={(e) => setRepoUrl(e.target.value)}
-                      className="pl-10"
+                      className="pl-10 font-mono bg-white/70 dark:bg-slate-900/70 border-slate-300 dark:border-slate-600 focus:border-indigo-500 focus:ring-indigo-500 transition-all duration-200 shadow-sm hover:shadow-md focus:shadow-lg"
                     />
                   </div>
                 </div>
@@ -473,7 +483,7 @@ export default function ConsolePage() {
               {/* Range Type Tabs */}
               <div>
                 <Label>Range Type</Label>
-                <Tabs value={rangeType} onValueChange={(value: "date" | "tag" | "sha") => setRangeType(value)} className="mt-2">
+                <Tabs value={rangeType} onValueChange={(value) => setRangeType(value as "date" | "tag" | "sha")} className="mt-2">
                   <TabsList className="grid w-full grid-cols-3">
                     <TabsTrigger value="date" className="flex items-center gap-2">
                       <Calendar className="h-4 w-4" />
@@ -560,11 +570,11 @@ export default function ConsolePage() {
               </div>
 
               {/* Generate Button */}
-              <div className="flex justify-between items-center">
+              <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
                 <Button
                   onClick={handleGenerate}
                   disabled={isGenerating || !repoUrl}
-                  className="bg-indigo-600 hover:bg-indigo-700"
+                  className="bg-gradient-to-r from-emerald-600 to-[#107C41] hover:from-emerald-700 hover:to-green-800 text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 px-8 py-2 font-mono w-full sm:w-auto"
                 >
                   {isGenerating ? (
                     <>
@@ -576,29 +586,29 @@ export default function ConsolePage() {
                   )}
                 </Button>
 
-                <div className="text-sm text-muted-foreground">
-                  <kbd className="px-2 py-1 bg-muted rounded text-xs">⌘</kbd> +
-                  <kbd className="px-2 py-1 bg-muted rounded text-xs ml-1">Enter</kbd> to generate
+                <div className="text-sm text-muted-foreground font-mono text-center sm:text-right">
+                  <kbd className="px-3 py-1 bg-slate-200 dark:bg-slate-700 rounded-md text-xs border border-slate-300 dark:border-slate-600 shadow-sm">⌘</kbd> +
+                  <kbd className="px-3 py-1 bg-slate-200 dark:bg-slate-700 rounded-md text-xs border border-slate-300 dark:border-slate-600 shadow-sm ml-1">Enter</kbd> to generate
                 </div>
               </div>
             </div>
           </div>
-        </header>
+        </div>
 
         {/* Main content area */}
-        <div className="container mx-auto px-6 py-6">
+        <div className="container mx-auto px-6 py-6 min-h-[calc(100vh-200px)] relative">
           {draft ? (
             <div className="space-y-4" ref={editorSectionRef}>
               {/* Publish button */}
-              <div className="flex justify-between items-center">
-                <h2 className="text-lg font-medium">Edit Draft & Preview</h2>
-                <div className="flex items-center gap-4">
-                  <div className="text-sm text-muted-foreground">
-                    <kbd className="px-2 py-1 bg-muted rounded text-xs">⌘</kbd> +
-                    <kbd className="px-2 py-1 bg-muted rounded text-xs ml-1">⇧</kbd> +
-                    <kbd className="px-2 py-1 bg-muted rounded text-xs ml-1">Enter</kbd> to publish
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <h2 className="text-lg font-mono font-medium text-slate-800 dark:text-slate-200">Edit Draft & Preview</h2>
+                <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+                  <div className="text-sm text-muted-foreground font-mono text-center">
+                    <kbd className="px-3 py-1 bg-slate-200 dark:bg-slate-700 rounded-md text-xs border border-slate-300 dark:border-slate-600 shadow-sm">⌘</kbd> +
+                    <kbd className="px-3 py-1 bg-slate-200 dark:bg-slate-700 rounded-md text-xs border border-slate-300 dark:border-slate-600 shadow-sm ml-1">⇧</kbd> +
+                    <kbd className="px-3 py-1 bg-slate-200 dark:bg-slate-700 rounded-md text-xs border border-slate-300 dark:border-slate-600 shadow-sm ml-1">Enter</kbd> to publish
                   </div>
-                  <Button onClick={handlePublish} disabled={isPublishing || !generatedPayload || !shaRange}>
+                  <Button onClick={handlePublish} disabled={isPublishing || !generatedPayload || !shaRange} className="bg-gradient-to-r from-[#107C41] to-green-700 hover:from-green-800 hover:to-green-900 text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 font-mono w-full sm:w-auto">
                     {isPublishing ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -616,58 +626,61 @@ export default function ConsolePage() {
 
               {/* Show what will be published */}
               {generatedPayload && (
-                <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
-                  <div className="flex items-center gap-2 text-sm">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                    <span className="font-medium text-blue-900 dark:text-blue-100">
-                      Ready to publish:
-                    </span>
-                    <span className="text-blue-700 dark:text-blue-300">
-                      {generatedPayload.repo} ({generatedPayload.branch})
-                    </span>
-                    <span className="text-blue-600 dark:text-blue-400">
-                      {generatedPayload.mode === 'date' && generatedPayload.start && generatedPayload.end && 
-                        `${new Date(generatedPayload.start).toLocaleDateString()} - ${new Date(generatedPayload.end).toLocaleDateString()}`}
-                      {generatedPayload.mode === 'tag' && 
-                        `${generatedPayload.base}...${generatedPayload.head || 'HEAD'}`}
-                      {generatedPayload.mode === 'sha' && 
-                        `${generatedPayload.base?.substring(0, 7)}...${generatedPayload.head?.substring(0, 7) || 'HEAD'}`}
-                    </span>
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 border border-blue-200 dark:border-blue-800 rounded-xl p-4 shadow-lg backdrop-blur-sm">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 text-sm">
+                    <div className="flex items-center gap-3">
+                      <div className="w-3 h-3 bg-gradient-to-r from-emerald-500 to-[#107C41] rounded-full animate-pulse shadow-lg"></div>
+                      <span className="font-mono font-medium text-blue-900 dark:text-blue-100">
+                        Ready to publish:
+                      </span>
+                    </div>
+                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 ml-6 sm:ml-0">
+                      <span className="font-mono text-blue-700 dark:text-blue-300 bg-blue-100/50 dark:bg-blue-900/30 px-2 py-1 rounded-md">
+                        {generatedPayload.repo} ({generatedPayload.branch})
+                      </span>
+                      <span className="font-mono text-blue-600 dark:text-blue-400 bg-blue-100/30 dark:bg-blue-900/20 px-2 py-1 rounded-md">
+                        {generatedPayload.mode === 'date' && generatedPayload.start && generatedPayload.end && 
+                          `${new Date(generatedPayload.start).toLocaleDateString()} - ${new Date(generatedPayload.end).toLocaleDateString()}`}
+                        {generatedPayload.mode === 'tag' && 
+                          `${generatedPayload.base}...${generatedPayload.head || 'HEAD'}`}
+                        {generatedPayload.mode === 'sha' && 
+                          `${generatedPayload.base?.substring(0, 7)}...${generatedPayload.head?.substring(0, 7) || 'HEAD'}`}
+                      </span>
+                    </div>
                   </div>
                 </div>
               )}
 
               {/* Split pane editor */}
-              <div className="grid grid-cols-2 gap-1 h-[600px] border rounded-2xl overflow-hidden">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 h-[400px] md:h-[600px] bg-white/50 dark:bg-slate-800/50 rounded-2xl overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-700">
                 {/* Editor pane */}
-                <div className="bg-slate-50 dark:bg-slate-900 flex flex-col">
-                  <div className="p-4 border-b bg-background/50 flex-shrink-0">
-                    <h3 className="font-medium text-sm">Draft Editor</h3>
-                    <p className="text-xs text-muted-foreground mt-1">
+                <div className="bg-slate-50/80 dark:bg-slate-900/80 flex flex-col backdrop-blur-sm">
+                  <div className="p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-100/80 dark:bg-slate-800/80 flex-shrink-0">
+                    <h3 className="font-mono font-medium text-sm text-slate-800 dark:text-slate-200">Draft Editor</h3>
+                    <p className="text-xs font-mono text-muted-foreground mt-1">
                       Edit your changelog draft. Changes will be saved when you publish.
                     </p>
                   </div>
-                  <div className="flex-1" style={{ height: 'calc(600px - 80px)' }}>
+                  <div className="flex-1 h-[320px] md:h-[520px]">
                   <Textarea
                     value={draft}
                     onChange={(e) => setDraft(e.target.value)}
-                      className="w-full border-0 rounded-none resize-none font-mono text-xs leading-relaxed bg-transparent focus:outline-none focus:ring-0"
+                      className="w-full h-full border-0 rounded-none resize-none font-mono text-xs leading-relaxed bg-transparent focus:outline-none focus:ring-0 md:text-sm"
                       placeholder="Your changelog draft will appear here..."
-                      style={{ height: '100%', minHeight: '100%' }}
                   />
                   </div>
                 </div>
 
                 {/* Preview pane */}
-                <div className="bg-background flex flex-col">
-                  <div className="p-4 border-b flex-shrink-0">
-                    <h3 className="font-medium text-sm">Preview</h3>
-                    <p className="text-xs text-muted-foreground mt-1">
+                <div className="bg-white/80 dark:bg-slate-800/80 flex flex-col backdrop-blur-sm">
+                  <div className="p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-100/80 dark:bg-slate-800/80 flex-shrink-0">
+                    <h3 className="font-mono font-medium text-sm text-slate-800 dark:text-slate-200">Preview</h3>
+                    <p className="text-xs font-mono text-muted-foreground mt-1">
                       This is how your changelog will look when published.
                     </p>
                   </div>
-                  <div className="overflow-y-auto" style={{ height: 'calc(600px - 80px)' }}>
-                    <div className="p-6">
+                  <div className="overflow-y-auto h-[320px] md:h-[520px]">
+                    <div className="p-4 md:p-6">
                     <div className="prose prose-sm dark:prose-invert max-w-none">
                       <ReactMarkdown>{draft}</ReactMarkdown>
                       </div>
@@ -679,23 +692,37 @@ export default function ConsolePage() {
           ) : (
             // Empty state
             <div className="flex flex-col items-center justify-center h-[400px] text-center">
-              <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mb-4">
-                <Hash className="w-12 h-12 text-muted-foreground" />
+              <div className="w-24 h-24 bg-gradient-to-br from-emerald-500 to-[#107C41] rounded-full flex items-center justify-center mb-6 shadow-lg">
+                <Hash className="w-12 h-12 text-white" />
               </div>
-              <h3 className="text-lg font-medium mb-2">No draft generated yet</h3>
-              <p className="text-muted-foreground mb-4 max-w-md">
+              <h3 className="text-lg font-mono font-medium mb-3 text-slate-800 dark:text-slate-200">No draft generated yet</h3>
+              <p className="font-mono text-muted-foreground mb-6 max-w-md leading-relaxed">
                 Configure your repository settings above and click "Generate Draft" to create an AI-powered
                 changelog draft that you can edit before publishing.
               </p>
-              <div className="text-sm text-muted-foreground">
-                Use <kbd className="px-2 py-1 bg-muted rounded text-xs">⌘</kbd> +
-                <kbd className="px-2 py-1 bg-muted rounded text-xs ml-1">Enter</kbd> to generate quickly
+              <div className="text-sm text-muted-foreground font-mono bg-white/50 dark:bg-slate-800/50 px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm">
+                Use <kbd className="px-3 py-1 bg-slate-200 dark:bg-slate-700 rounded-md text-xs border border-slate-300 dark:border-slate-600 shadow-sm">⌘</kbd> +
+                <kbd className="px-3 py-1 bg-slate-200 dark:bg-slate-700 rounded-md text-xs border border-slate-300 dark:border-slate-600 shadow-sm ml-1">Enter</kbd> to generate quickly
               </div>
             </div>
           )}
         </div>
 
         <Toaster />
+        
+        {/* Footer */}
+        <footer className="border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 mt-auto">
+          <div className="container mx-auto px-6 flex py-4 items-center justify-center">
+            <div className="text-center">
+              <div className="text-sm font-mono text-muted-foreground">
+                © 2025 Relix. AI-powered changelog generator.
+              </div>
+              <div className="text-sm font-mono text-muted-foreground mt-1">
+                Made with ❤️ for developers
+              </div>
+            </div>
+          </div>
+        </footer>
       </div>
     </ThemeProvider>
   )
