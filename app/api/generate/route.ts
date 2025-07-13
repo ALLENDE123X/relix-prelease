@@ -21,6 +21,7 @@ function validateEnvironment() {
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
     SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
+    HELICONE_API_KEY: process.env.HELICONE_API_KEY,
   };
 
   const missing = Object.entries(required)
@@ -41,6 +42,10 @@ function initializeOpenAI() {
   const env = validateEnvironment();
   openai = new OpenAI({
     apiKey: env.OPENAI_API_KEY,
+    baseURL: 'https://oai.hconeai.com/v1',
+    defaultHeaders: {
+      'Helicone-Auth': `Bearer ${env.HELICONE_API_KEY}`,
+    },
   });
 }
 
@@ -278,31 +283,32 @@ export async function generateChangelog(commits: any[]): Promise<string> {
   const formatDate = (date: Date) => date.toISOString().split('T')[0];
 
   const prompt = `
-  You are an expert technical writer tasked with creating a high-quality changelog for a new software release.
+  You are a senior technical writer responsible for producing clear, factual, and detailed changelogs for a developer audience.
 
-  **Your Changelog Persona:**
-  - **Tone:** Enthusiastic, professional, and slightly informal. Imagine you're excited to share these updates with your users.
-  - **Style:** Clear, concise, and user-centric. Avoid technical jargon where possible.
-  - **Goal:** To create a changelog that is not only informative but also engaging and easy to read.
+  **Instructions:**
+  - **Tone:** Your tone should be objective, professional, and formal. Avoid marketing language, enthusiasm, or informalities.
+  - **Goal:** The primary goal is to create a technically precise and exhaustive summary of changes. Synthesize the provided commit messages into a coherent log.
+  - **Summarization:** Group related commits under a single, descriptive bullet point where logical. For example, multiple commits related to fixing a single bug or implementing one feature should be summarized together.
+  - **Clarity:** Ensure that each entry clearly describes the change that was made.
 
   **Formatting Rules:**
   - **Main Header:** Start with a top-level header that includes the release version and date (e.g., "# Release v1.2.3 – ${formatDate(latestDate)}").
   - **Categorization:** Use the following categories to group changes. If a category has no items, omit it.
-    - **✨ New Features:** For brand-new functionality.
-    - **🚀 Improvements:** For enhancements to existing features.
-    - **🐛 Bug Fixes:** For bug resolutions.
-    - **🔧 Under the Hood:** For internal changes, refactoring, and dependency updates that users might not see but are important for developers.
+    - **New Features:** For new, user-facing capabilities.
+    - **Improvements:** For enhancements to existing features.
+    - **Bug Fixes:** For bug resolutions.
+    - **Internal Changes:** For internal refactoring, dependency updates, and other non-user-facing modifications.
   - **Content:**
     - Write in complete sentences.
-    - Each bullet point should clearly explain the change from the user's perspective.
-    - Mention the commit SHA in parentheses at the end of each bullet point for traceability.
+    - Each bullet point must accurately reflect the changes from the commit log.
+    - Include the relevant commit SHAs in parentheses at the end of each bullet point for traceability.
 
   **Commit Log:**
-  The following is a list of commits for the period from ${formatDate(earliestDate)} to ${formatDate(latestDate)}. Use this to draft the changelog.
+  The following is a list of commits for the period from ${formatDate(earliestDate)} to ${formatDate(latestDate)}. Use this as the source of truth for your changelog.
 
   ${commitSummaries.map(c => `- ${c.sha}: ${c.message} (${c.author})`).join('\n')}
 
-  Generate a well-structured and engaging changelog based on these guidelines.
+  Generate a detailed and objective changelog based on these instructions.
   `;
 
   const response = await openai.chat.completions.create({
@@ -310,7 +316,7 @@ export async function generateChangelog(commits: any[]): Promise<string> {
     messages: [
       {
         role: 'system',
-        content: 'You are an expert technical writer creating a professional, engaging, and user-centric changelog. Your tone should be enthusiastic yet professional, and you must follow strict formatting guidelines, including categorizing changes with specific emojis and omitting empty sections. You are writing for a PUBLISHED release, so do not use "(Unreleased)" headers.'
+        content: 'You are a technical writer responsible for creating precise and professional software changelogs. Your task is to produce a detailed, objective summary of code changes based on commit messages. Focus on clarity, accuracy, and technical detail.'
       },
       {
         role: 'user',

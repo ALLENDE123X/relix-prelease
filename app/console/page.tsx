@@ -16,6 +16,7 @@ import { useTheme } from "next-themes"
 import ReactMarkdown from "react-markdown"
 import { ToastAction } from "@/components/ui/toast"
 import Link from "next/link"
+import posthog from "posthog-js"
 
 // Types for our state management
 interface GeneratePayload {
@@ -598,20 +599,42 @@ function ConsolePageContent() {
 
               {/* Generate Button */}
               <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-                <Button
-                  onClick={handleGenerate}
-                  disabled={isGenerating || !repoUrl}
-                  className="bg-gradient-to-r from-emerald-600 to-[#107C41] hover:from-emerald-700 hover:to-green-800 text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 px-8 py-2 font-mono w-full sm:w-auto"
-                >
-                  {isGenerating ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Generating Draft...
-                    </>
-                  ) : (
-                    "Generate Draft"
-                  )}
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    onClick={handleGenerate}
+                    disabled={isGenerating || !repoUrl}
+                    className="bg-gradient-to-r from-emerald-600 to-[#107C41] hover:from-emerald-700 hover:to-green-800 text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 px-8 py-2 font-mono"
+                  >
+                    {isGenerating ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Generating Draft...
+                      </>
+                    ) : (
+                      "Generate Draft"
+                    )}
+                  </Button>
+                  
+                  <Button
+                    onClick={() => {
+                      if (typeof window !== 'undefined') {
+                        posthog.capture('test_event', {
+                          source: 'console_page',
+                          timestamp: new Date().toISOString(),
+                          repo: repoUrl
+                        })
+                        toast({
+                          title: "Test Event Sent",
+                          description: "PostHog test event captured successfully",
+                        })
+                      }
+                    }}
+                    variant="outline"
+                    className="font-mono"
+                  >
+                    Test Analytics
+                  </Button>
+                </div>
 
                 <div className="text-sm text-muted-foreground font-mono text-center sm:text-right">
                   <kbd className="px-3 py-1 bg-slate-200 dark:bg-slate-700 rounded-md text-xs border border-slate-300 dark:border-slate-600 shadow-sm">⌘</kbd> +
