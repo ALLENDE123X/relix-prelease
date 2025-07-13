@@ -268,7 +268,7 @@ export default function ReposPage() {
             <div className="flex flex-1 items-center justify-end">
               <nav className="flex items-center space-x-6">
                 <Link
-                  href="/repos"
+                  href="/"
                   className="text-sm font-mono font-medium bg-gradient-to-r from-emerald-600 to-[#107C41] bg-clip-text text-transparent"
                 >
                   Repos

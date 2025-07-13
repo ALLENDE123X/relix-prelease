@@ -413,7 +413,7 @@ export default function ConsolePage() {
             <div className="flex flex-1 items-center justify-end">
               <nav className="flex items-center space-x-4 md:space-x-6">
                 <Link
-                  href="/repos"
+                  href="/"
                   className="text-sm font-mono font-medium text-muted-foreground hover:bg-gradient-to-r hover:from-emerald-600 hover:to-[#107C41] hover:bg-clip-text hover:text-transparent transition-all duration-300"
                 >
                   Repos
