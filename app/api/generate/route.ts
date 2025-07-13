@@ -277,28 +277,40 @@ export async function generateChangelog(commits: any[]): Promise<string> {
   
   const formatDate = (date: Date) => date.toISOString().split('T')[0];
 
-  const prompt = `Generate a professional changelog from these Git commits. This is for a PUBLISHED release, not a draft.
+  const prompt = `
+  You are an expert technical writer tasked with creating a high-quality changelog for a new software release.
 
-Requirements:
-- Start with a clear version header (e.g., "# Release v1.2.3 - ${formatDate(latestDate)}")
-- DO NOT use "(Unreleased)" - this is a published changelog
-- Format as clean Markdown with appropriate sections (## Features, ## Bug Fixes, ## Improvements, etc.)
-- Focus on user-facing changes and group related commits together
-- Use bullet points for individual changes
-- Include commit SHAs in parentheses for reference
-- Make it professional and user-friendly
+  **Your Changelog Persona:**
+  - **Tone:** Enthusiastic, professional, and slightly informal. Imagine you're excited to share these updates with your users.
+  - **Style:** Clear, concise, and user-centric. Avoid technical jargon where possible.
+  - **Goal:** To create a changelog that is not only informative but also engaging and easy to read.
 
-Commits (${formatDate(earliestDate)} to ${formatDate(latestDate)}):
-${commitSummaries.map(c => `- ${c.sha}: ${c.message} (${c.author})`).join('\n')}
+  **Formatting Rules:**
+  - **Main Header:** Start with a top-level header that includes the release version and date (e.g., "# Release v1.2.3 – ${formatDate(latestDate)}").
+  - **Categorization:** Use the following categories to group changes. If a category has no items, omit it.
+    - **✨ New Features:** For brand-new functionality.
+    - **🚀 Improvements:** For enhancements to existing features.
+    - **🐛 Bug Fixes:** For bug resolutions.
+    - **🔧 Under the Hood:** For internal changes, refactoring, and dependency updates that users might not see but are important for developers.
+  - **Content:**
+    - Write in complete sentences.
+    - Each bullet point should clearly explain the change from the user's perspective.
+    - Mention the commit SHA in parentheses at the end of each bullet point for traceability.
 
-Generate a well-structured changelog that would be useful for users and developers.`;
+  **Commit Log:**
+  The following is a list of commits for the period from ${formatDate(earliestDate)} to ${formatDate(latestDate)}. Use this to draft the changelog.
+
+  ${commitSummaries.map(c => `- ${c.sha}: ${c.message} (${c.author})`).join('\n')}
+
+  Generate a well-structured and engaging changelog based on these guidelines.
+  `;
 
   const response = await openai.chat.completions.create({
     model: 'gpt-4o-mini',
     messages: [
       {
         role: 'system',
-        content: 'You are a technical writer specializing in creating clear, professional changelogs for published software releases. Never use "(Unreleased)" headers - always create published release changelogs with proper version numbers and dates.'
+        content: 'You are an expert technical writer creating a professional, engaging, and user-centric changelog. Your tone should be enthusiastic yet professional, and you must follow strict formatting guidelines, including categorizing changes with specific emojis and omitting empty sections. You are writing for a PUBLISHED release, so do not use "(Unreleased)" headers.'
       },
       {
         role: 'user',

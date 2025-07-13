@@ -6,6 +6,7 @@ import ReactMarkdown from 'react-markdown'
 import { ExternalLink, Copy, Check, Sun, Moon } from 'lucide-react'
 import { ThemeProvider } from "@/components/theme-provider"
 import { Button } from "@/components/ui/button"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useTheme } from "next-themes"
 import Link from 'next/link'
 
@@ -16,6 +17,7 @@ type Release = {
   range: string
   publishedAt: string
   markdown: string
+  branch: string
 }
 
 // Theme toggle component
@@ -77,7 +79,7 @@ function EmptyState({ slug }: { slug: string }) {
       <h3 className="text-xl font-mono font-semibold mb-4 text-gray-800 dark:text-gray-200">
         No changelogs found for {slug}
       </h3>
-      <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto">
+      <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto font-mono">
         This repository doesn't have any changelogs yet. You can create the first one using our AI-powered console.
       </p>
       <Link
@@ -153,65 +155,63 @@ function ReleaseCard({ release }: { release: Release }) {
 
 // Client component for interactivity
 export default function ChangelogClient({ slug }: { slug: string }) {
+  const [allReleases, setAllReleases] = useState<Release[]>([])
   const [releases, setReleases] = useState<Release[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [isRepoUrlCopied, setIsRepoUrlCopied] = useState(false)
+  const [branches, setBranches] = useState<string[]>([])
+  const [selectedBranch, setSelectedBranch] = useState<string>('')
 
-  const fetchReleases = async () => {
+  const fetchAllReleases = async () => {
     try {
       setLoading(true)
       setError(null)
       
-      console.log('Fetching releases for:', slug)
       const response = await fetch(`/api/releases?repo=${slug}`)
-      
-      console.log('Response status:', response.status)
-      console.log('Response headers:', Object.fromEntries(response.headers.entries()))
-      
       if (!response.ok) {
-        const errorText = await response.text()
-        console.log('Error response:', errorText)
         throw new Error(`HTTP ${response.status}: ${response.statusText}`)
       }
       
-      const data = await response.json()
-      console.log('Received releases:', data)
-      console.log('Number of releases:', data.length)
-      
-      // Sort releases by publishedAt desc
-      const sortedReleases = data.sort((a: Release, b: Release) => 
-        new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
-      )
-      
-      console.log('Setting releases:', sortedReleases)
-      setReleases(sortedReleases)
+      const data: Release[] = await response.json()
+      setAllReleases(data)
+
+      const uniqueBranches = [...new Set(data.map(r => r.branch))].sort()
+      setBranches(uniqueBranches)
+
+      if (uniqueBranches.length > 0) {
+        const mainBranch = uniqueBranches.find(b => b === 'main')
+        const masterBranch = uniqueBranches.find(b => b === 'master')
+        setSelectedBranch(mainBranch || masterBranch || uniqueBranches[0] || '')
+      } else {
+        setReleases([])
+      }
     } catch (err) {
       console.error('Error fetching releases:', err)
       setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
-      console.log('Setting loading to false')
       setLoading(false)
     }
   }
 
   useEffect(() => {
-    fetchReleases()
+    fetchAllReleases()
   }, [slug])
 
-  const handleCopyRepoUrl = async () => {
-    try {
-      const url = `https://github.com/${slug}`
-      await navigator.clipboard.writeText(url)
-      setIsRepoUrlCopied(true)
-      setTimeout(() => setIsRepoUrlCopied(false), 2000)
-    } catch (error) {
-      console.error('Failed to copy URL:', error)
+  useEffect(() => {
+    if (selectedBranch && allReleases.length > 0) {
+      const filteredReleases = allReleases.filter(r => r.branch === selectedBranch)
+      const sortedReleases = filteredReleases.sort((a, b) => 
+        new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+      )
+      setReleases(sortedReleases)
+    } else if (allReleases.length === 0) {
+      setReleases([])
     }
-  }
+  }, [selectedBranch, allReleases])
+
 
   const handleRetry = () => {
-    fetchReleases()
+    fetchAllReleases()
   }
 
   // Parse owner/repo from slug
@@ -235,6 +235,7 @@ export default function ChangelogClient({ slug }: { slug: string }) {
                 </span>
               </Link>
             </div>
+
             <div className="flex flex-1 items-center justify-end">
               <nav className="flex items-center space-x-6">
                 <Link
@@ -268,18 +269,35 @@ export default function ChangelogClient({ slug }: { slug: string }) {
                     <span className="text-gray-600 dark:text-gray-400">{owner}</span>
                     <span className="text-gray-900 dark:text-white">/{repo}</span>
                   </h1>
-                  <button
-                    onClick={handleCopyRepoUrl}
+                  <a
+                    href={`https://github.com/${slug}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors"
-                    title="Copy repository URL"
+                    title="View repository on GitHub"
                   >
-                    {isRepoUrlCopied ? (
-                      <Check className="h-4 w-4 text-green-600 dark:text-green-400" />
-                    ) : (
-                      <ExternalLink className="h-4 w-4" />
-                    )}
-                  </button>
+                    <ExternalLink className="h-4 w-4" />
+                  </a>
                 </div>
+                {branches.length > 0 && (
+                  <div className="ml-6 w-48">
+                    <Select
+                      value={selectedBranch}
+                      onValueChange={setSelectedBranch}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a branch" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {branches.map((branch) => (
+                          <SelectItem key={branch} value={branch}>
+                            {branch}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
               </div>
             </header>
 

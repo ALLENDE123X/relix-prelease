@@ -95,6 +95,7 @@ export async function GET(request: NextRequest) {
     // Get repo from query params
     const { searchParams } = new URL(request.url);
     const repo = searchParams.get('repo');
+    const branch = searchParams.get('branch');
 
     if (!repo) {
       return NextResponse.json(
@@ -104,11 +105,16 @@ export async function GET(request: NextRequest) {
     }
 
     // Fetch releases from database
-    const { data, error } = await supabase
+    let query = supabase
       .from('release_slices')
       .select('*')
-      .eq('repo', repo)
-      .order('published_at', { ascending: false });
+      .eq('repo', repo);
+
+    if (branch) {
+      query = query.eq('branch', branch);
+    }
+
+    const { data, error } = await query.order('published_at', { ascending: false });
 
     if (error) {
       console.error('Database error:', error);
