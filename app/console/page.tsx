@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useEffect, useCallback, useRef } from "react"
+import { useState, useEffect, useCallback, useRef, Suspense } from "react"
+import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -177,7 +178,10 @@ function TagCombobox({
   )
 }
 
-export default function ConsolePage() {
+function ConsolePageContent() {
+  // URL parameters
+  const searchParams = useSearchParams()
+  
   // Form state
   const [repoUrl, setRepoUrl] = useState("")
   const [branch, setBranch] = useState("main")
@@ -208,6 +212,29 @@ export default function ConsolePage() {
     const match = url.match(/github\.com\/([^/]+\/[^/]+)/)
     return match ? match[1] : null
   }
+
+  // Handle URL parameters on component mount
+  useEffect(() => {
+    const pathParam = searchParams.get('path')
+    if (pathParam) {
+      // Validate the path format (owner/repo)
+      const pathParts = pathParam.split('/')
+      if (pathParts.length === 2 && pathParts[0] && pathParts[1]) {
+        const githubUrl = `https://github.com/${pathParam}`
+        setRepoUrl(githubUrl)
+        toast({
+          title: "Repository Auto-populated",
+          description: `Loaded repository: ${pathParam}`,
+        })
+      } else {
+        toast({
+          title: "Invalid Path Parameter",
+          description: "Path should be in format: owner/repo",
+          variant: "destructive",
+        })
+      }
+    }
+  }, [searchParams, toast])
 
   // Fetch branches when repo URL changes
   useEffect(() => {
@@ -725,5 +752,13 @@ export default function ConsolePage() {
         </footer>
       </div>
     </ThemeProvider>
+  )
+}
+
+export default function ConsolePage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ConsolePageContent />
+    </Suspense>
   )
 }
