@@ -119,7 +119,7 @@ export async function GET(request: NextRequest) {
     if (error) {
       console.error('Database error:', error);
       return NextResponse.json(
-        { error: 'Failed to fetch releases' },
+        { error: 'Unable to load changelog releases. Please refresh the page or try again later.' },
         { status: 500 }
       );
     }
@@ -174,7 +174,7 @@ export async function PUT(request: NextRequest) {
     if (error) {
       console.error('Database update error:', error);
       return NextResponse.json(
-        { error: 'Failed to update changelog' },
+        { error: 'Unable to update changelog. Please try again or contact support if the problem persists.' },
         { status: 500 }
       );
     }
@@ -245,7 +245,7 @@ export async function POST(request: NextRequest) {
     if (error) {
       console.error('Database insert error:', error);
       return NextResponse.json(
-        { error: 'Failed to save changelog to database' },
+        { error: 'Unable to save changelog. Please try again or contact support if the problem persists.' },
         { status: 500 }
       );
     }
@@ -274,7 +274,7 @@ export async function POST(request: NextRequest) {
 
       if (error.message.includes('Database')) {
         return NextResponse.json(
-          { error: 'Database operation failed' },
+          { error: 'Database operation failed. Please try again or contact support if the problem persists.' },
           { status: 500 }
         );
       }

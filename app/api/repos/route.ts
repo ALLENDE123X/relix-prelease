@@ -66,7 +66,7 @@ export async function GET(request: NextRequest) {
     if (error) {
       console.error('Database error:', error);
       return NextResponse.json(
-        { error: 'Failed to fetch repositories' },
+        { error: 'Unable to load repositories. Please refresh the page or try again later.' },
         { status: 500 }
       );
     }

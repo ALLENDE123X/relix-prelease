@@ -241,7 +241,7 @@ async function checkCommitsOverlap(
 
   if (error) {
     console.error('Database overlap check error:', error);
-    throw new Error('Database query failed');
+    throw new Error('Unable to check for existing changelogs. Please try again or contact support if the problem persists.');
   }
 
   if (!data || data.length === 0) {
@@ -445,6 +445,20 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
           { error: 'AI service unavailable' },
           { status: 503 }
+        );
+      }
+
+      if (error.message.includes('No commits found')) {
+        return NextResponse.json(
+          { error: error.message },
+          { status: 404 }
+        );
+      }
+
+      if (error.message.includes('Unable to check for existing changelogs')) {
+        return NextResponse.json(
+          { error: error.message },
+          { status: 500 }
         );
       }
     }
